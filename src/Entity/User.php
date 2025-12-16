@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_USER_PSEUDO', fields: ['pseudo'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -31,6 +32,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var string the user's pseudo
+     */
+    #[ORM\Column(length: 50, unique: true)]
+    private string $pseudo;
 
     public function getId(): ?int
     {
@@ -92,6 +99,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return string get pseudo
+     */
+    public function getPseudo(): string
+    {
+        return $this->pseudo;
+    }
+
+    /**
+     * @param string $pseudo
+     * @return $this
+     */
+    public function setPseudo(string $pseudo): static
+    {
+        $this->pseudo = $pseudo;
 
         return $this;
     }
