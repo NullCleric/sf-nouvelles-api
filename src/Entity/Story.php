@@ -16,11 +16,15 @@ class Story
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private string $title;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $content = null;
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 25000)]
+    #[ORM\Column(type: 'text')]
+    private string $content;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $pdfLink = null;

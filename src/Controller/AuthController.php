@@ -73,55 +73,14 @@ class AuthController extends AbstractController
         ], 201);
     }
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
-    public function login(
-        Request $request,
-        EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher,
-        TokenStorageInterface $tokenStorage
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-
-        $email = $data['email'] ?? null;
-        $password = $data['password'] ?? null;
-
-        if (!$email || !$password) {
-            return $this->json(['message' => 'Missing credentials'], 400);
-        }
-
-        /** @var User|null $user */
-        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-
-        if (!$user || !$passwordHasher->isPasswordValid($user, $password)) {
-            return $this->json(['message' => 'Invalid credentials'], 401);
-        }
-
-        // Création du token de session
-        $token = new UsernamePasswordToken(
-            $user,
-            'main',
-            $user->getRoles()
-        );
-
-        // Stockage du token dans la session
-        $tokenStorage->setToken($token);
-        $request->getSession()->set('_security_main', serialize($token));
-
-        return $this->json([
-            'message' => 'Logged in successfully',
-            'user' => [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-                'pseudo' => $user->getPseudo(),
-            ],
-        ]);
+    public function login(): Response
+    {
+        throw new \LogicException('This code should never be reached (handled by Symfony security).');
     }
 
     #[Route('/api/logout', name: 'api_logout', methods: ['POST'])]
-    public function logout(Request $request, TokenStorageInterface $tokenStorage): Response
+    public function logout(): Response
     {
-        $tokenStorage->setToken(null);
-        $request->getSession()->invalidate();
-
-        return new Response(null, 204);
+        throw new \LogicException('This code should never be reached (handled by Symfony security).');
     }
 }

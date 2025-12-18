@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Story;
 
-#[ORM\Entity(repositoryClass: TagRepository::class)]
+#[ORM\Entity]
+#[ORM\Table(name: 'tag')]
+#[ORM\UniqueConstraint(name: 'uniq_tag_slug', fields: ['slug'])]
 class Tag
 {
     #[ORM\Id]
@@ -15,15 +17,12 @@ class Tag
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100, unique: true)]
-    private ?string $title = null;
+    #[ORM\Column(length: 100)]
+    private string $title;
 
-    #[ORM\Column(length: 100, unique: true)]
-    private ?string $slug = null;
+    #[ORM\Column(length: 100)]
+    private string $slug;
 
-    /**
-     * @var Collection<int, Story>
-     */
     #[ORM\ManyToMany(targetEntity: Story::class, mappedBy: 'tags')]
     private Collection $stories;
 
@@ -32,59 +31,19 @@ class Tag
         $this->stories = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public function getId(): ?int { return $this->id; }
+    public function getTitle(): string { return $this->title; }
+    public function getSlug(): string { return $this->slug; }
 
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): static
+    public function setTitle(string $title): self
     {
         $this->title = $title;
-
         return $this;
     }
 
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(string $slug): static
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Story>
-     */
-    public function getStories(): Collection
-    {
-        return $this->stories;
-    }
-
-    public function addStory(Story $story): static
-    {
-        if (!$this->stories->contains($story)) {
-            $this->stories->add($story);
-            $story->addTag($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStory(Story $story): static
-    {
-        if ($this->stories->removeElement($story)) {
-            $story->removeTag($this);
-        }
-
         return $this;
     }
 }

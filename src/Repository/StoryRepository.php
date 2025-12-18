@@ -16,28 +16,26 @@ class StoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Story::class);
     }
 
-//    /**
-//     * @return Story[] Returns an array of Story objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @param list<string> $tagSlugs
+     * @return Story[]
+     */
+    public function findAllFilteredByTags(array $tagSlugs): array
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->leftJoin('s.tags', 't')
+            ->addSelect('t')
+            ->leftJoin('s.author', 'a')
+            ->addSelect('a')
+            ->distinct()
+            ->orderBy('s.id', 'DESC');
 
-//    public function findOneBySomeField($value): ?Story
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if (count($tagSlugs) > 0) {
+            $qb->andWhere('t.slug IN (:slugs)')
+                ->setParameter('slugs', $tagSlugs);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
 }
